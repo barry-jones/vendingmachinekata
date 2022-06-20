@@ -108,4 +108,27 @@ public class VendingMachineTests
 
         Assert.Equal(EXPECTED, result);
     }
+
+    [Fact]
+    public void When_ProductRequestedAndNotEnoughMoney_DisplayProductPrice() {
+        const string EXPECTED = "£1.00";
+        var m = new VendingMachine();
+        m.DispenseProduct("Cola");
+
+        string result = m.ReadDisplay();
+
+        Assert.Equal(EXPECTED, result);
+    }
+
+    [Fact]
+    public void When_AfterIncorrectPriceMessage_DisplayDefaultMessage() {
+        const string EXPECTED = "£0.10";
+        var m = new VendingMachine();
+        m.InsertCoin(Coins.TenPence);
+        m.DispenseProduct("Cola");
+
+        string result = m.ReadDisplay();
+
+        Assert.Equal(EXPECTED, result);
+    }
 }

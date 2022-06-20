@@ -9,7 +9,8 @@ public class VendingMachine
 {
   private Dictionary<VendindMachineState, string> stateMessages = new Dictionary<VendindMachineState, string> {
     { VendindMachineState.Ready, "INSERT COIN" },
-    { VendindMachineState.ProductDispensed, "THANK YOU" }
+    { VendindMachineState.ProductDispensed, "THANK YOU" },
+    { VendindMachineState.IncorrectMoney, "" }
   };
   private List<Product> products = new List<Product>() {
     new Product { Name = "Cola", Price = 1M },
@@ -39,9 +40,10 @@ public class VendingMachine
   public string ReadDisplay() {
     string message = totalCoinsInserted == 0 
       ? this.stateMessages[this.currentState]
-      : string.Format("{0:C}", totalCoinsInserted);
+      : formatCurrency(totalCoinsInserted);
 
-    if(this.currentState == VendindMachineState.ProductDispensed)
+    if(this.currentState == VendindMachineState.ProductDispensed 
+      || this.currentState == VendindMachineState.IncorrectMoney)
       this.currentState = VendindMachineState.Ready;
     
     return message;
@@ -63,7 +65,15 @@ public class VendingMachine
       this.currentState = VendindMachineState.ProductDispensed;
       this.totalCoinsInserted -= foundProduct.Price;
     }
+    else {
+      this.currentState = VendindMachineState.IncorrectMoney;
+      this.stateMessages[this.currentState] = formatCurrency(foundProduct.Price);
+    }
 
     return productVended;
+  }
+
+  private string formatCurrency(decimal value) {
+    return string.Format("{0:C}", value);
   }
 }
