@@ -15,9 +15,9 @@ public class VendingMachineTests
     public void When_ValidCoinAdded_DisplayShowsCoinAmount(Coins coin, string expected)
     {
         var m = new VendingMachine();
-        m.AddCoin(coin);
+        m.InsertCoin(coin);
 
-        string result = m.GetDisplay();
+        string result = m.ReadDisplay();
 
         Assert.Equal(expected, result);
     }
@@ -30,9 +30,9 @@ public class VendingMachineTests
     public void When_MultipleCoinsAdded_DisplayShowsTotal(Coins[] coins, string expected) {
         var m = new VendingMachine();
         foreach(Coins current in coins)
-            m.AddCoin(current);
+            m.InsertCoin(current);
 
-        string result = m.GetDisplay();
+        string result = m.ReadDisplay();
 
         Assert.Equal(expected, result);
     }
@@ -42,7 +42,7 @@ public class VendingMachineTests
     [InlineData(Coins.TwoPence, new Coins[] { Coins.TwoPence })]
     public void When_InvalidCoinInserted_CoinReturned(Coins coin, Coins[] expected) {
         var m = new VendingMachine();
-        m.AddCoin(coin);
+        m.InsertCoin(coin);
 
         Coins[] result = m.EmptyCoinReturn();
 
@@ -53,10 +53,10 @@ public class VendingMachineTests
     public void When_InvalidCoinInserted_TotalNotUpdated() {
         const string EXPECTED = "£0.10";
         var m = new VendingMachine();
-        m.AddCoin(Coins.TenPence);
-        m.AddCoin(Coins.OnePence);
+        m.InsertCoin(Coins.TenPence);
+        m.InsertCoin(Coins.OnePence);
 
-        string result = m.GetDisplay();
+        string result = m.ReadDisplay();
 
         Assert.Equal(EXPECTED, result);
     }
@@ -66,7 +66,7 @@ public class VendingMachineTests
         const string EXPECTED = "INSERT COIN";
         var m = new VendingMachine();
 
-        string result = m.GetDisplay();
+        string result = m.ReadDisplay();
 
         Assert.Equal(EXPECTED, result);
     }
@@ -77,10 +77,35 @@ public class VendingMachineTests
     public void When_ProductRequestedAndCorrectMoney_ProductIsDispensed(Coins[] coins, string product, bool expected) {
         var m = new VendingMachine();
         foreach (Coins current in coins)
-            m.AddCoin(current);
+            m.InsertCoin(current);
 
         bool result = m.DispenseProduct(product);
 
         Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void When_ProductRequestedAndCorrectMoney_DisplayThankYouMessage() {
+        const string EXPECTED = "THANK YOU";
+        var m = new VendingMachine();
+        m.InsertCoin(Coins.FiftyPence);
+        m.DispenseProduct("Crisps");
+
+        string result = m.ReadDisplay();
+
+        Assert.Equal(EXPECTED, result);
+    }
+
+    [Fact]
+    public void When_AfterThankYouMessage_DisplayDefaultMessage() {
+        const string EXPECTED = "INSERT COIN";
+        var m = new VendingMachine();
+        m.InsertCoin(Coins.FiftyPence);
+        m.DispenseProduct("Crisps");
+        m.ReadDisplay();
+
+        string result = m.ReadDisplay();
+
+        Assert.Equal(EXPECTED, result);
     }
 }

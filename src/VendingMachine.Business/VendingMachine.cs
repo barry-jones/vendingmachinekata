@@ -7,7 +7,10 @@ public record Product {
 
 public class VendingMachine
 {
-  private const string DEFAULT_DISPLAY = "INSERT COIN";
+  private Dictionary<VendindMachineState, string> stateMessages = new Dictionary<VendindMachineState, string> {
+    { VendindMachineState.Ready, "INSERT COIN" },
+    { VendindMachineState.ProductDispensed, "THANK YOU" }
+  };
   private List<Product> products = new List<Product>() {
     new Product { Name = "Cola", Price = 1M },
     new Product { Name = "Crisps", Price = 0.5M },
@@ -15,8 +18,9 @@ public class VendingMachine
   };
   private List<Coins> coinReturn = new List<Coins>();
   private decimal totalCoinsInserted = 0;
+  private VendindMachineState currentState = VendindMachineState.Ready;
 
-  public void AddCoin(Coins coin) {
+  public void InsertCoin(Coins coin) {
     if(coin == Coins.OnePence || coin == Coins.TwoPence)
       this.coinReturn.Add(coin);
     else {
@@ -32,10 +36,15 @@ public class VendingMachine
     }
   }
 
-  public string GetDisplay() {
-    return totalCoinsInserted == 0 
-      ? DEFAULT_DISPLAY 
+  public string ReadDisplay() {
+    string message = totalCoinsInserted == 0 
+      ? this.stateMessages[this.currentState]
       : string.Format("{0:C}", totalCoinsInserted);
+
+    if(this.currentState == VendindMachineState.ProductDispensed)
+      this.currentState = VendindMachineState.Ready;
+    
+    return message;
   }
 
   public Coins[] EmptyCoinReturn() {
@@ -49,6 +58,12 @@ public class VendingMachine
     if(foundProduct == null)
       throw new ArgumentException("Product does not exist");
     
-    return (this.totalCoinsInserted == foundProduct.Price);
+    var productVended = this.totalCoinsInserted == foundProduct.Price;
+    if(productVended) {
+      this.currentState = VendindMachineState.ProductDispensed;
+      this.totalCoinsInserted -= foundProduct.Price;
+    }
+
+    return productVended;
   }
 }
