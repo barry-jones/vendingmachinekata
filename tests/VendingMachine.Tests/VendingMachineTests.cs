@@ -36,4 +36,38 @@ public class VendingMachineTests
 
         Assert.Equal(expected, result);
     }
+
+    [Theory]
+    [InlineData(Coins.OnePence, new Coins[] { Coins.OnePence })]
+    [InlineData(Coins.TwoPence, new Coins[] { Coins.TwoPence })]
+    public void When_InvalidCoinInserted_CoinReturned(Coins coin, Coins[] expected) {
+        var m = new VendingMachine();
+        m.AddCoin(coin);
+
+        Coins[] result = m.EmptyCoinReturn();
+
+        Assert.Equal(expected, result);
+    }
+
+    [Fact]
+    public void When_InvalidCoinInserted_TotalNotUpdated() {
+        const string EXPECTED = "£0.10";
+        var m = new VendingMachine();
+        m.AddCoin(Coins.TenPence);
+        m.AddCoin(Coins.OnePence);
+
+        string result = m.GetDisplay();
+
+        Assert.Equal(EXPECTED, result);
+    }
+
+    [Fact]
+    public void When_NoCoinsInserted_DisplayInsertCoin() {
+        const string EXPECTED = "INSERT COIN";
+        var m = new VendingMachine();
+
+        string result = m.GetDisplay();
+
+        Assert.Equal(EXPECTED, result);
+    }
 }
