@@ -70,4 +70,17 @@ public class VendingMachineTests
 
         Assert.Equal(EXPECTED, result);
     }
+
+    [Theory]
+    [InlineData(new Coins[] { Coins.FiftyPence }, "Crisps", true )]
+    [InlineData(new Coins[] { Coins.OnePound }, "Cola", true )]
+    public void When_ProductRequestedAndCorrectMoney_ProductIsDispensed(Coins[] coins, string product, bool expected) {
+        var m = new VendingMachine();
+        foreach (Coins current in coins)
+            m.AddCoin(current);
+
+        bool result = m.DispenseProduct(product);
+
+        Assert.Equal(expected, result);
+    }
 }
