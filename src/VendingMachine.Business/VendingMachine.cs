@@ -42,7 +42,7 @@ public class VendingMachine
 
 	public string ReadDisplay()
 	{
-		string message = totalCoinsInserted == 0
+		string message = totalCoinsInserted == 0 || this.currentState == VendindMachineState.IncorrectMoney
 			? this.stateMessages[this.currentState]
 			: formatCurrency(totalCoinsInserted);
 
