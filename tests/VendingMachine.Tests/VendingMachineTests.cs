@@ -150,6 +150,7 @@ public class VendingMachineTests
     [InlineData(new Coins[] { Coins.OnePound, Coins.TwentyPence }, 0.70)]
     [InlineData(new Coins[] { Coins.TwoPound, Coins.TenPence }, 1.60)]
     [InlineData(new Coins[] { Coins.TwoPound, Coins.FivePence }, 1.55)]
+    [InlineData(new Coins[] { Coins.FiftyPence, Coins.FivePence }, .05)]
     public void When_TooMuchMoneyAdded_ChangeIsReturned(Coins[] insertedCoins, decimal totalChange) {
         var m = new VendingMachine();
 		foreach(Coins current in insertedCoins)
@@ -158,11 +159,11 @@ public class VendingMachineTests
 
         Coins[] change = m.EmptyCoinReturn();
 
-        decimal result = this.convertCoinsToDecimal(change);
+        decimal result = this.CalculateTotalCoins(change);
         Assert.Equal(totalChange, result);
     }
 
-    private decimal convertCoinsToDecimal(Coins[] coins) {
+    private decimal CalculateTotalCoins(Coins[] coins) {
 		decimal total = 0;
 
 		foreach(Coins current in coins)

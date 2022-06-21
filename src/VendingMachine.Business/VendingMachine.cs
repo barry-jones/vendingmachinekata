@@ -1,24 +1,24 @@
 ﻿namespace Business;
 
-public record Product
-{
-	public string Name;
-	public decimal Price;
-}
-
+/// <summary>
+/// A vending machine that can accept coins, dispense products, and give chamge.
+/// </summary>
 public class VendingMachine
 {
-	private Dictionary<VendindMachineState, string> stateMessages = new Dictionary<VendindMachineState, string> {
+	private readonly Dictionary<VendindMachineState, string> stateMessages = new()
+    {
 		{ VendindMachineState.Ready, "INSERT COIN" },
 		{ VendindMachineState.ProductDispensed, "THANK YOU" },
 		{ VendindMachineState.IncorrectMoney, "" }
 	};
-	private List<Product> products = new List<Product>() {
+	private readonly List<Product> products = new() 
+	{
 		new Product { Name = "Cola", Price = 1M },
 		new Product { Name = "Crisps", Price = 0.5M },
 		new Product { Name = "Chocolate", Price = 0.65M },
 	};
-	private Dictionary<Coins, decimal> coinValues = new Dictionary<Coins, decimal> {
+	private readonly Dictionary<Coins, decimal> coinValues = new()
+    {
 		{ Coins.FivePence, 0.05M },
 		{ Coins.TenPence, 0.1M },
 		{ Coins.TwentyPence, 0.2M },
@@ -26,7 +26,7 @@ public class VendingMachine
 		{ Coins.OnePound, 1M },
 		{ Coins.TwoPound, 2M },
 	};
-	private List<Coins> coinReturn = new List<Coins>();
+	private readonly List<Coins> coinReturn = new List<Coins>();
 	private decimal totalCoinsInserted = 0;
 	private VendindMachineState currentState = VendindMachineState.Ready;
 
@@ -42,13 +42,19 @@ public class VendingMachine
 
 	public string ReadDisplay()
 	{
+		// incorrect money state shows price then ready state
 		string message = totalCoinsInserted == 0 || this.currentState == VendindMachineState.IncorrectMoney
 			? this.stateMessages[this.currentState]
-			: formatCurrency(totalCoinsInserted);
+			: FormatCurrency(totalCoinsInserted);
 
-		if (this.currentState == VendindMachineState.ProductDispensed
-			|| this.currentState == VendindMachineState.IncorrectMoney)
+		// after interim messages displayed revert back to default message
+		if (
+			this.currentState == VendindMachineState.ProductDispensed || 
+			this.currentState == VendindMachineState.IncorrectMoney
+			)
+        {
 			this.currentState = VendindMachineState.Ready;
+        }
 
 		return message;
 	}
@@ -62,7 +68,7 @@ public class VendingMachine
 
 	public bool DispenseProduct(string productName)
 	{
-		var foundProduct = this.products.Find(p => p.Name == productName);
+		Product? foundProduct = this.products.Find(p => p.Name == productName);
 		if (foundProduct == null)
 			throw new ArgumentException("Product does not exist");
 
@@ -76,28 +82,27 @@ public class VendingMachine
 		else
 		{
 			this.currentState = VendindMachineState.IncorrectMoney;
-			this.stateMessages[this.currentState] = formatCurrency(foundProduct.Price);
+			this.stateMessages[this.currentState] = this.FormatCurrency(foundProduct.Price);
 		}
 
 		return productVended;
 	}
 
-	private string formatCurrency(decimal value)
+	private string FormatCurrency(decimal value)
 	{
 		return string.Format("{0:C}", value);
 	}
 
 	private void DispenseChange()
 	{
-		while (this.totalCoinsInserted > 0)
+		// dispense large value coins first, will always reach zero unless change
+		// required cannot be built from coins available
+		foreach(KeyValuePair<Coins, decimal> coinValue in this.coinValues) 
 		{
-			foreach(KeyValuePair<Coins, decimal> coinValue in this.coinValues) 
+			while(this.totalCoinsInserted >= coinValue.Value)
 			{
-				while(this.totalCoinsInserted >= coinValue.Value)
-				{
-					this.coinReturn.Add(coinValue.Key);
-					this.totalCoinsInserted -= coinValue.Value;
-				}
+				this.coinReturn.Add(coinValue.Key);
+				this.totalCoinsInserted -= coinValue.Value;
 			}
 		}
 	}
