@@ -82,7 +82,7 @@ public class VendingMachine
 		else
 		{
 			this.currentState = VendindMachineState.IncorrectMoney;
-			this.stateMessages[this.currentState] = this.FormatCurrency(foundProduct.Price);
+			this.stateMessages[this.currentState] = $"PRICE {this.FormatCurrency(foundProduct.Price)}";
 		}
 
 		return canVendProduct;

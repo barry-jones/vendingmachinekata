@@ -120,7 +120,7 @@ public class VendingMachineTests
     [Fact]
     public void When_ProductRequestedAndNotEnoughMoney_DisplayProductPrice()
     {
-        const string EXPECTED = "£1.00";
+        const string EXPECTED = "PRICE £1.00";
         var m = new VendingMachine();
         m.DispenseProduct("Cola");
 
