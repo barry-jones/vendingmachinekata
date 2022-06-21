@@ -1,3 +1,4 @@
+
 using Xunit;
 using Business;
 
@@ -27,9 +28,10 @@ public class VendingMachineTests
     [InlineData(new Coins[] { Coins.OnePound, Coins.FiftyPence }, "£1.50")]
     [InlineData(new Coins[] { Coins.TwoPound, Coins.TwentyPence }, "£2.20")]
     [InlineData(new Coins[] { Coins.TwoPound, Coins.TwentyPence, Coins.OnePound }, "£3.20")]
-    public void When_MultipleCoinsAdded_DisplayShowsTotal(Coins[] coins, string expected) {
+    public void When_MultipleCoinsAdded_DisplayShowsTotal(Coins[] coins, string expected)
+    {
         var m = new VendingMachine();
-        foreach(Coins current in coins)
+        foreach (Coins current in coins)
             m.InsertCoin(current);
 
         string result = m.ReadDisplay();
@@ -40,7 +42,8 @@ public class VendingMachineTests
     [Theory]
     [InlineData(Coins.OnePence, new Coins[] { Coins.OnePence })]
     [InlineData(Coins.TwoPence, new Coins[] { Coins.TwoPence })]
-    public void When_InvalidCoinInserted_CoinReturned(Coins coin, Coins[] expected) {
+    public void When_InvalidCoinInserted_CoinReturned(Coins coin, Coins[] expected)
+    {
         var m = new VendingMachine();
         m.InsertCoin(coin);
 
@@ -50,7 +53,8 @@ public class VendingMachineTests
     }
 
     [Fact]
-    public void When_InvalidCoinInserted_TotalNotUpdated() {
+    public void When_InvalidCoinInserted_TotalNotUpdated()
+    {
         const string EXPECTED = "£0.10";
         var m = new VendingMachine();
         m.InsertCoin(Coins.TenPence);
@@ -62,7 +66,8 @@ public class VendingMachineTests
     }
 
     [Fact]
-    public void When_NoCoinsInserted_DisplayInsertCoin() {
+    public void When_NoCoinsInserted_DisplayInsertCoin()
+    {
         const string EXPECTED = "INSERT COIN";
         var m = new VendingMachine();
 
@@ -72,9 +77,10 @@ public class VendingMachineTests
     }
 
     [Theory]
-    [InlineData(new Coins[] { Coins.FiftyPence }, "Crisps", true )]
-    [InlineData(new Coins[] { Coins.OnePound }, "Cola", true )]
-    public void When_ProductRequestedAndCorrectMoney_ProductIsDispensed(Coins[] coins, string product, bool expected) {
+    [InlineData(new Coins[] { Coins.FiftyPence }, "Crisps", true)]
+    [InlineData(new Coins[] { Coins.OnePound }, "Cola", true)]
+    public void When_ProductRequestedAndCorrectMoney_ProductIsDispensed(Coins[] coins, string product, bool expected)
+    {
         var m = new VendingMachine();
         foreach (Coins current in coins)
             m.InsertCoin(current);
@@ -85,7 +91,8 @@ public class VendingMachineTests
     }
 
     [Fact]
-    public void When_ProductRequestedAndCorrectMoney_DisplayThankYouMessage() {
+    public void When_ProductRequestedAndCorrectMoney_DisplayThankYouMessage()
+    {
         const string EXPECTED = "THANK YOU";
         var m = new VendingMachine();
         m.InsertCoin(Coins.FiftyPence);
@@ -97,7 +104,8 @@ public class VendingMachineTests
     }
 
     [Fact]
-    public void When_AfterThankYouMessage_DisplayDefaultMessage() {
+    public void When_AfterThankYouMessage_DisplayDefaultMessage()
+    {
         const string EXPECTED = "INSERT COIN";
         var m = new VendingMachine();
         m.InsertCoin(Coins.FiftyPence);
@@ -110,7 +118,8 @@ public class VendingMachineTests
     }
 
     [Fact]
-    public void When_ProductRequestedAndNotEnoughMoney_DisplayProductPrice() {
+    public void When_ProductRequestedAndNotEnoughMoney_DisplayProductPrice()
+    {
         const string EXPECTED = "£1.00";
         var m = new VendingMachine();
         m.DispenseProduct("Cola");
@@ -121,24 +130,26 @@ public class VendingMachineTests
     }
 
     [Fact]
-    public void When_AfterIncorrectPriceMessageAndCoinsInserted_DisplayCurrentValue() {
+    public void When_AfterIncorrectPriceMessageAndCoinsInserted_DisplayCurrentValue()
+    {
         const string EXPECTED = "£0.10";
         var m = new VendingMachine();
         m.InsertCoin(Coins.TenPence);
         m.DispenseProduct("Cola");
         m.ReadDisplay();
-		
+
         string result = m.ReadDisplay();
 
         Assert.Equal(EXPECTED, result);
     }
 
-	[Fact]
-    public void When_AfterIncorrectPriceMessageAndNoCoinsInserted_DisplayDefaultMessage() {
+    [Fact]
+    public void When_AfterIncorrectPriceMessageAndNoCoinsInserted_DisplayDefaultMessage()
+    {
         const string EXPECTED = "INSERT COIN";
         var m = new VendingMachine();
         m.DispenseProduct("Cola");
-		m.ReadDisplay();
+        m.ReadDisplay();
 
         string result = m.ReadDisplay();
 
@@ -151,10 +162,11 @@ public class VendingMachineTests
     [InlineData(new Coins[] { Coins.TwoPound, Coins.TenPence }, 1.60)]
     [InlineData(new Coins[] { Coins.TwoPound, Coins.FivePence }, 1.55)]
     [InlineData(new Coins[] { Coins.FiftyPence, Coins.FivePence }, .05)]
-    public void When_TooMuchMoneyAdded_ChangeIsReturned(Coins[] insertedCoins, decimal totalChange) {
+    public void When_TooMuchMoneyAdded_ChangeIsReturned(Coins[] insertedCoins, decimal totalChange)
+    {
         var m = new VendingMachine();
-		foreach(Coins current in insertedCoins)
-        	m.InsertCoin(current);
+        foreach (Coins current in insertedCoins)
+            m.InsertCoin(current);
         m.DispenseProduct("Crisps");
 
         Coins[] change = m.EmptyCoinReturn();
@@ -163,23 +175,24 @@ public class VendingMachineTests
         Assert.Equal(totalChange, result);
     }
 
-    private decimal CalculateTotalCoins(Coins[] coins) {
-		decimal total = 0;
+    private decimal CalculateTotalCoins(Coins[] coins)
+    {
+        decimal total = 0;
 
-		foreach(Coins current in coins)
-		{
-			total += current switch
-			{
-				Coins.FivePence => 0.05M,
-				Coins.TenPence => 0.10M,
-				Coins.TwentyPence => 0.20M,
-				Coins.FiftyPence => 0.50M,
-				Coins.OnePound => 1.0M,
-				Coins.TwoPound => 2.00M,
-				_ => 0M
-			};
-		}
+        foreach (Coins current in coins)
+        {
+            total += current switch
+            {
+                Coins.FivePence => 0.05M,
+                Coins.TenPence => 0.10M,
+                Coins.TwentyPence => 0.20M,
+                Coins.FiftyPence => 0.50M,
+                Coins.OnePound => 1.0M,
+                Coins.TwoPound => 2.00M,
+                _ => 0M
+            };
+        }
 
-		return total;
+        return total;
     }
 }

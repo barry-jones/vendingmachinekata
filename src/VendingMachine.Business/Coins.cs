@@ -3,7 +3,8 @@ namespace Business;
 /// <summary>
 /// Enumeration of valid tender for the vending machine
 /// </summary>
-public enum Coins {
+public enum Coins
+{
 	OnePence,
 	TwoPence,
 	FivePence,

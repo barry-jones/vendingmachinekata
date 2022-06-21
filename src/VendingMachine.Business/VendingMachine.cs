@@ -6,19 +6,19 @@
 public class VendingMachine
 {
 	private readonly Dictionary<VendindMachineState, string> stateMessages = new()
-    {
+	{
 		{ VendindMachineState.Ready, "INSERT COIN" },
 		{ VendindMachineState.ProductDispensed, "THANK YOU" },
 		{ VendindMachineState.IncorrectMoney, "" }
 	};
-	private readonly List<Product> products = new() 
+	private readonly List<Product> products = new()
 	{
 		new Product { Name = "Cola", Price = 1M },
 		new Product { Name = "Crisps", Price = 0.5M },
 		new Product { Name = "Chocolate", Price = 0.65M },
 	};
 	private readonly Dictionary<Coins, decimal> coinValues = new()
-    {
+	{
 		{ Coins.FivePence, 0.05M },
 		{ Coins.TenPence, 0.1M },
 		{ Coins.TwentyPence, 0.2M },
@@ -49,12 +49,12 @@ public class VendingMachine
 
 		// after interim messages displayed revert back to default message
 		if (
-			this.currentState == VendindMachineState.ProductDispensed || 
+			this.currentState == VendindMachineState.ProductDispensed ||
 			this.currentState == VendindMachineState.IncorrectMoney
 			)
-        {
+		{
 			this.currentState = VendindMachineState.Ready;
-        }
+		}
 
 		return message;
 	}
@@ -72,8 +72,8 @@ public class VendingMachine
 		if (foundProduct == null)
 			throw new ArgumentException("Product does not exist");
 
-		var productVended = this.totalCoinsInserted >= foundProduct.Price;
-		if (productVended)
+		var canVendProduct = this.totalCoinsInserted >= foundProduct.Price;
+		if (canVendProduct)
 		{
 			this.currentState = VendindMachineState.ProductDispensed;
 			this.totalCoinsInserted -= foundProduct.Price;
@@ -85,7 +85,7 @@ public class VendingMachine
 			this.stateMessages[this.currentState] = this.FormatCurrency(foundProduct.Price);
 		}
 
-		return productVended;
+		return canVendProduct;
 	}
 
 	private string FormatCurrency(decimal value)
@@ -97,9 +97,9 @@ public class VendingMachine
 	{
 		// dispense large value coins first, will always reach zero unless change
 		// required cannot be built from coins available
-		foreach(KeyValuePair<Coins, decimal> coinValue in this.coinValues) 
+		foreach (KeyValuePair<Coins, decimal> coinValue in this.coinValues)
 		{
-			while(this.totalCoinsInserted >= coinValue.Value)
+			while (this.totalCoinsInserted >= coinValue.Value)
 			{
 				this.coinReturn.Add(coinValue.Key);
 				this.totalCoinsInserted -= coinValue.Value;

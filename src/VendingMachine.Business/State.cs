@@ -1,6 +1,7 @@
 namespace Business;
 
-internal enum VendindMachineState {
+internal enum VendindMachineState
+{
 	Ready,
 	ProductDispensed,
 	IncorrectMoney
