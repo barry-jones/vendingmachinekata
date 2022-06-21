@@ -131,4 +131,41 @@ public class VendingMachineTests
 
         Assert.Equal(EXPECTED, result);
     }
+
+    [Theory]
+    [InlineData(new Coins[] { Coins.OnePound }, 0.50)]
+    [InlineData(new Coins[] { Coins.OnePound, Coins.TwentyPence }, 0.70)]
+    [InlineData(new Coins[] { Coins.TwoPound, Coins.TenPence }, 1.60)]
+    [InlineData(new Coins[] { Coins.TwoPound, Coins.FivePence }, 1.55)]
+    public void When_TooMuchMoneyAdded_ChangeIsReturned(Coins[] insertedCoins, decimal totalChange) {
+        var m = new VendingMachine();
+		foreach(Coins current in insertedCoins)
+        	m.InsertCoin(current);
+        m.DispenseProduct("Crisps");
+
+        Coins[] change = m.EmptyCoinReturn();
+
+        decimal result = this.convertCoinsToDecimal(change);
+        Assert.Equal(totalChange, result);
+    }
+
+    private decimal convertCoinsToDecimal(Coins[] coins) {
+		decimal total = 0;
+
+		foreach(Coins current in coins)
+		{
+			total += current switch
+			{
+				Coins.FivePence => 0.05M,
+				Coins.TenPence => 0.10M,
+				Coins.TwentyPence => 0.20M,
+				Coins.FiftyPence => 0.50M,
+				Coins.OnePound => 1.0M,
+				Coins.TwoPound => 2.00M,
+				_ => 0M
+			};
+		}
+
+		return total;
+    }
 }
